@@ -1,12 +1,15 @@
+mod logger;
 mod message;
 mod node;
 
+use crate::logger::setup as logger_setup;
 use crate::message::{Message, MessageType};
 use crate::node::Node;
 use serde_json;
 use std::collections::HashMap;
 
 fn main() -> serde_json::Result<()> {
+    logger_setup();
     let mut node_list: HashMap<String, Node> = HashMap::new();
     loop {
         match Message::read() {

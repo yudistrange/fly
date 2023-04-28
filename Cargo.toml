@@ -9,3 +9,5 @@ authors = ["udit kumar <yudistrange@gmail.com>"]
 [dependencies]
 serde = { version = "1.0", features = ["derive"]}
 serde_json = "1.0"
+log = "0.4.17"
+log4rs = "1.2.0"

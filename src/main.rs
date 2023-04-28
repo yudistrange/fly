@@ -31,31 +31,41 @@ fn handle_message(node_list: &mut HashMap<String, Node>, msg: Message) {
             msg_id,
             node_id,
             node_ids,
-        } => match node_list.get(&node_id) {
-            Some(_) => eprintln!("Node already registered with id: {}", node_id),
-            None => {
-                let n = Node::new(node_id, node_ids);
-                n.send(
-                    origin,
-                    MessageType::InitOk {
-                        msg_id: 5,
-                        in_reply_to: msg_id,
-                    },
-                );
-                node_list.insert(n.id.clone(), n);
+        } => {
+            log::info!("Received Init message");
+            match node_list.get(&node_id) {
+                Some(_) => eprintln!("Node already registered with id: {}", node_id),
+                None => {
+                    let n = Node::new(node_id, node_ids);
+                    log::info!("Sending a InitOk message");
+                    n.send(
+                        origin,
+                        MessageType::InitOk {
+                            msg_id: 5,
+                            in_reply_to: msg_id,
+                        },
+                    );
+                    node_list.insert(n.id.clone(), n);
+                }
             }
-        },
-        MessageType::Echo { msg_id, echo } => match node_list.get(&node_id) {
-            Some(n) => n.send(
-                origin,
-                MessageType::EchoOk {
-                    msg_id: 6,
-                    in_reply_to: msg_id,
-                    echo,
-                },
-            ),
-            None => eprintln!("No node registered with id: {}", node_id),
-        },
+        }
+        MessageType::Echo { msg_id, echo } => {
+            log::info!("Received Echo message");
+            match node_list.get(&node_id) {
+                Some(n) => {
+                    log::info!("Sending EchoOk message");
+                    n.send(
+                        origin,
+                        MessageType::EchoOk {
+                            msg_id: 6,
+                            in_reply_to: msg_id,
+                            echo,
+                        },
+                    )
+                }
+                None => eprintln!("No node registered with id: {}", node_id),
+            }
+        }
         _ => {}
     }
 }

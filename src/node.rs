@@ -1,4 +1,5 @@
 use serde::Serialize;
+use serde_json;
 
 use crate::message::{Message, MessageType};
 
@@ -19,7 +20,14 @@ impl Node {
     }
 
     pub fn send(&self, destination: String, msg_type: MessageType) {
+        log::info!("Generating a message struct");
         let m = Message::new(self.id.clone(), destination, msg_type, self.current_msg_id);
-        m.write(std::io::stdout()).unwrap();
+
+        let _ = serde_json::to_writer(std::io::stdout(), &m);
+
+        match m.write(std::io::stdout()) {
+            Ok(_) => log::info!("Wrote message to stdout"),
+            Err(e) => log::error!("Message writing failed with error: {}", e.to_string()),
+        }
     }
 }
